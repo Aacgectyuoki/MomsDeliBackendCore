@@ -14,19 +14,23 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-@Embeddable
+
+@Entity
+@Table(name = "payment_information")
 @Getter
 @Setter
 public class PaymentInformation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private String cardholderName;
-
     private String cardNumber;
-
     private LocalDate expirationDate;
-
     private String cvv;
-
-
 }

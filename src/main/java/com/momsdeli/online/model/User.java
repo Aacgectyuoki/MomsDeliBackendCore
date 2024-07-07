@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Users")
@@ -35,23 +36,20 @@ public class User {
     private String email;
     private String role;
     private String mobilePhone;
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> addressList = new ArrayList<>();
-    @ElementCollection
-    @CollectionTable(name = "payment_information",joinColumns = @JoinColumn(name = "user_id"))
-    private List<PaymentInformation> paymentInformations = new ArrayList<>();
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<PaymentInformation> paymentInformations;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Rating> ratings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Review> reviews = new ArrayList<>();
 
     private LocalDateTime createdAt;
-
-
-
-
-
 }

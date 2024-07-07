@@ -1,20 +1,11 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:51 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.mapper;
 
 import com.momsdeli.online.dto.UserDTO;
 import com.momsdeli.online.model.User;
 
 import java.util.stream.Collectors;
-public class UserMapper {
 
+public class UserMapper {
 
     public static UserDTO toDTO(User user) {
         UserDTO userDTO = new UserDTO();
@@ -49,7 +40,7 @@ public class UserMapper {
                 .collect(Collectors.toList()));
         user.setPaymentInformations(userDTO.getPaymentInformations().stream()
                 .map(PaymentInformationMapper::toEntity) // Assuming PaymentInformationMapper is implemented similarly
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet())); // Changed from toList() to toSet()
         user.setCreatedAt(userDTO.getCreatedAt());
         return user;
     }
