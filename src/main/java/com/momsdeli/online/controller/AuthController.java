@@ -72,7 +72,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String generateToken = jwtProvider.generateToken(authentication);
         AuthResponse authResponse = new AuthResponse(generateToken, MomsDeliUtils.SIGNUP_SUCCESS);
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -86,7 +86,7 @@ public class AuthController {
 
         String generateToken = jwtProvider.generateToken(authentication);
         AuthResponse authResponse = new AuthResponse(generateToken, MomsDeliUtils.SIGNING_SUCCESS);
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
 
     }
 
