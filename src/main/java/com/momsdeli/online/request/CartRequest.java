@@ -1,6 +1,6 @@
 package com.momsdeli.online.request;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
@@ -10,6 +10,10 @@ import java.util.List;
  */
 
 @Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CartRequest {
 
     private Long userId;
