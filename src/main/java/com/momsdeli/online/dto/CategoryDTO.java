@@ -1,24 +1,21 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:12 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CategoryDTO {
+
+    @JsonProperty("id")
     private Long id;
-    @NotNull
-    @Size(max = 50)
+
+    @NotBlank(message = "Name is mandatory")
+    @JsonProperty("name")
     private String name;
-    private Long parentCategoryId;
-    private Integer level;
+
+    @JsonProperty("products")
+    private List<ProductDTO> products;
 }

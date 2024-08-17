@@ -1,49 +1,55 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:18 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
+import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class UserDTO {
+
+    @JsonProperty("id")
     private Long id;
 
-    @NotBlank
-    private String firstName;
+    @NotBlank(message = "Username is mandatory")
+    @JsonProperty("username")
+    private String username;
 
-    @NotBlank
-    private String lastName;
-
-    @NotBlank
+    @NotBlank(message = "Password is mandatory")
+    @JsonProperty("password")
     private String password;
 
-    @NotBlank
-    @Email
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is mandatory")
+    @JsonProperty("email")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Role is mandatory")
+    @Pattern(regexp = "USER|ADMIN", message = "Role must be either USER or ADMIN")
+    @JsonProperty("role")
     private String role;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{10}", message = "Mobile phone number must be 10 digits")
-    private String mobilePhone;
+    @NotBlank(message = "First name is mandatory")
+    @JsonProperty("first_name")
+    private String firstName;
 
-    private List<AddressDTO> addressList;
+    @NotBlank(message = "Last name is mandatory")
+    @JsonProperty("last_name")
+    private String lastName;
 
-    private List<PaymentInformationDTO> paymentInformations;
+    @JsonProperty("orders")
+    private List<OrderDTO> orders;
 
-    private LocalDateTime createdAt;
+    @JsonProperty("cart")
+    private CartDTO cart;
+
+    @JsonProperty("ratings")
+    private List<RatingDTO> ratings;
 }

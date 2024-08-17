@@ -1,27 +1,32 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:17 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.dto;
 
-import com.momsdeli.online.model.Product;
-import com.momsdeli.online.model.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class ReviewDTO {
 
+    @JsonProperty("id")
     private Long id;
-    private User user;
-    private Product product;
-    private double rating;
-    private LocalDateTime createdAt;
 
+    @NotBlank(message = "Comment is mandatory")
+    @JsonProperty("comment")
+    private String comment;
+
+    @Min(value = 1, message = "Rating must be at least 1")
+    @Max(value = 5, message = "Rating must be at most 5")
+    @JsonProperty("rating")
+    private int rating;
+
+    @NotNull(message = "Product is mandatory")
+    @JsonProperty("product")
+    private ProductDTO product;
+
+    @NotNull(message = "User is mandatory")
+    @JsonProperty("user")
+    private UserDTO user;
 }

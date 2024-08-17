@@ -1,35 +1,42 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:15 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class ProductDTO {
 
+    @JsonProperty("id")
     private Long id;
+
+    @NotBlank(message = "Name is mandatory")
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("description")
     private String description;
-    @NotNull
-    @PositiveOrZero
-    private Double price;
-    private Double discountedPrice;
-    private Double discountedPercent;
-    @NotNull
-    @PositiveOrZero
-    private Integer quantity;
+
+    @NotNull(message = "Price is mandatory")
+    @JsonProperty("price")
+    private double price;
+
+    @JsonProperty("product_image_url")
     private String imageUrl;
-    private Double numRatings;
-    private Long categoryId;
-    private LocalDateTime createdAt;
+
+    @NotNull(message = "Category is mandatory")
+    @JsonProperty("category")
+    private CategoryDTO category;
+
+    @JsonProperty("reviews")
+    private List<ReviewDTO> reviews;
+
+    @JsonProperty("ratings")
+    private List<RatingDTO> ratings;
+
+    @JsonProperty("discounts")
+    private List<DiscountDTO> discounts;
 }

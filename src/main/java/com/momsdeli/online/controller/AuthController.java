@@ -6,7 +6,6 @@
  * Project Name: MomsDeliBackendCore$
  */
 
-
 package com.momsdeli.online.controller;
 
 import com.momsdeli.online.config.JwtProvider;
@@ -17,6 +16,7 @@ import com.momsdeli.online.model.User;
 import com.momsdeli.online.repository.UserRepository;
 import com.momsdeli.online.service.impl.CustomUserServiceImplementation;
 import com.momsdeli.online.utils.MomsDeliUtils;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
+
 public class AuthController {
 
 
@@ -41,12 +43,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserServiceImplementation customUserServiceImplementation;
 
-    public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, CustomUserServiceImplementation customUserServiceImplementation) {
-        this.userRepository = userRepository;
-        this.jwtProvider = jwtProvider;
-        this.passwordEncoder = passwordEncoder;
-        this.customUserServiceImplementation = customUserServiceImplementation;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user) throws UserException {

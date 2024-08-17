@@ -1,42 +1,26 @@
-/**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 8:26 PM$
- * Project Name: MomsDeliBackendCore$
- */
-
-
 package com.momsdeli.online.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
-public class Review {
+@Table(name = "reviews")
+public class Review extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String review;
+    @Column(nullable = false, length = 500)
+    private String comment;
+
+    @Column(nullable = false)
+    private int rating;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    @JsonIgnore
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    private LocalDateTime cratedAt;
-
 
 }

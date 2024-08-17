@@ -1,23 +1,26 @@
 package com.momsdeli.online.model;
 
+import com.momsdeli.online.model.BaseEntity;
+import com.momsdeli.online.model.Cart;
+import com.momsdeli.online.model.Product;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ratings")
-public class Rating extends BaseEntity {
+@Table(name = "cart_items")
+public class CartItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private int ratingValue;
+    private int quantity;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "cart_id", nullable = false)
+    private Cart cart;
 
 }

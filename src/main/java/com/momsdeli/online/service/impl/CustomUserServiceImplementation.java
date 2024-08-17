@@ -13,7 +13,6 @@ import com.momsdeli.online.dto.UserDTO;
 import com.momsdeli.online.mapper.UserMapper;
 import com.momsdeli.online.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,7 +37,7 @@ public class CustomUserServiceImplementation implements UserDetailsService {
         }
 
         // Convert User entity to UserDTO
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
 
         // Construct UserDetails object using UserDTO
         List<GrantedAuthority> authorityList = new ArrayList<>();
