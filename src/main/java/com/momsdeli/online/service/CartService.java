@@ -1,43 +1,66 @@
 package com.momsdeli.online.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.momsdeli.online.mapper.CartMapper;
+import com.momsdeli.online.model.Cart;
 import com.momsdeli.online.model.CartItem;
+import com.momsdeli.online.repository.CartItemRepository;
 import com.momsdeli.online.repository.CartRepository;
+import com.momsdeli.online.request.CartRequest;
+import com.momsdeli.online.response.CartItemResponse;
+import com.momsdeli.online.response.CartResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
 
-    private final CartRepository cartRepository;
+    @Autowired
+    private CartRepository cartRepository; // For Cart
 
-    public CartService(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository; // For CartItem
+
+    @Autowired
+    private CartMapper cartMapper;
+
+//    public CartResponse addOrUpdateItem(CartRequest request) {
+//        // Assuming request contains the necessary details to map to a CartItem and Cart
+//        CartItem cartItem = cartMapper.requestToCartItem(request);
+//        cartItem = cartItemRepository.save(cartItem);
+//
+//        // Assuming CartItem contains reference to Cart and it needs to be updated
+//        Cart cart = cartItem.getCart();
+//        cart = cartRepository.save(cart);
+//
+//        return cartMapper.cartToResponse(cart);
+//    }
+    public CartResponse addOrUpdateItem(CartRequest request) {
+        CartItem cartItem = cartMapper.requestToCartItem(request);
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+        cartItem.setCart(cart);
+        cartItem = cartItemRepository.save(cartItem);
+        cart.getCartItems().add(cartItem);
+        cartItem.setCart(cart); // Save the updated cart
+        return cartMapper.cartToResponse(cart); // Return the updated cart
     }
 
-    @Transactional
-    public CartItem addItemToCart(CartItem item) {
-        return cartRepository.save(item);
+    public void removeItem(Long id) {
+        cartItemRepository.deleteById(id);
     }
 
-    @Transactional
-    public void removeItemFromCart(Long itemId) {
-        cartRepository.deleteById(itemId);
+    public List<CartItemResponse> getAllCartItems() {
+        return cartItemRepository.findAll().stream()
+                .map(cartMapper::cartItemToResponse)
+                .collect(Collectors.toList());
     }
 
-    @Transactional
-    public CartItem updateItemQuantity(Long itemId, Integer quantity) {
-        CartItem item = cartRepository.findById(itemId).orElseThrow(() -> new RuntimeException("Item not found"));
-
-        return cartRepository.save(item);
-    }
-
-    public List<CartItem> getCartItems() {
-        return cartRepository.findAll();
-    }
-
-    @Transactional
-    public void clearCart() {
-        cartRepository.deleteAll();
+    public CartResponse addItemToCart(CartRequest request) {
+        Cart cart = cartMapper.requestToCart(request);
+        cartRepository.save(cart);
+        return cartMapper.cartToResponse(cart);
     }
 }

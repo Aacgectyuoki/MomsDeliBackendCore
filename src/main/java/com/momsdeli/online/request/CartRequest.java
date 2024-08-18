@@ -10,13 +10,16 @@ import java.util.List;
  */
 
 @Data
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class CartRequest {
-
+    private Long id;
     private Long userId;
-
     private List<CartItemRequest> cartItems;
+
+    public Long getCartId() {
+        return id;
+    }
+
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 }

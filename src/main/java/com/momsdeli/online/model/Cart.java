@@ -1,13 +1,14 @@
 package com.momsdeli.online.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "carts")
+@Getter
+@Setter
 public class Cart extends BaseEntity {
 
     @Id
@@ -23,6 +24,14 @@ public class Cart extends BaseEntity {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> cartItems;
 
+    public void addItem(CartItem item) {
+        cartItems.add(item);
+        // Do not set the cart reference in CartItem
+    }
 
+    public void removeItem(CartItem item) {
+        cartItems.remove(item);
+        // Do not unset the cart reference in CartItem
+    }
 
 }
