@@ -1,6 +1,8 @@
 package com.momsdeli.online.controller;
 
+import com.momsdeli.online.request.CartItemRequest;
 import com.momsdeli.online.request.CartRequest;
+import com.momsdeli.online.response.CartItemResponse;
 import com.momsdeli.online.response.CartResponse;
 import com.momsdeli.online.service.CartService;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +20,14 @@ public class CartController {
     }
 
     @PostMapping
-    public CartResponse addItemToCart(@RequestBody CartRequest request) {
-        return cartService.addItemToCart(request);
+    public CartItemResponse addItemToCart(@RequestBody CartItemRequest request) {
+//        request.setId(cartId);
+        return cartService.addOrUpdateItem(request);
     }
 
     @PutMapping("/{cartId}")
-    public CartResponse updateItemInCart(@PathVariable Long cartId, @RequestBody CartRequest request) {
-        request.setId(cartId); // Assuming CartRequest has a method to set ID
+    public CartItemResponse updateItemInCart(@PathVariable Long cartId, @RequestBody CartItemRequest request) {
+        request.getCartItemRequest(cartId); // Assuming CartRequest has a method to set ID
         return cartService.addOrUpdateItem(request);
     }
 
@@ -34,7 +37,7 @@ public class CartController {
     }
 
     @GetMapping
-    public List<CartResponse> getCartItems() {
+    public List<CartItemResponse> getCartItems() {
         return cartService.getAllCartItems();
     }
 
