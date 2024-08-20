@@ -4,19 +4,14 @@ import lombok.Data;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
-
 @Data
 public class ReviewResponse {
 
     private Long id;
-
-    private String comment;
-
+    private String productName;
+    private String username;
     private int rating;
-
-    private ProductResponse product; // Full object
-
-    private UserResponse user; // Full object
+    private String comment;
 }

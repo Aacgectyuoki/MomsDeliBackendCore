@@ -1,29 +1,29 @@
 package com.momsdeli.online.request;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
-@Data
 public class ProductRequest {
 
+    @NotBlank
     private String name;
 
     private String description;
 
-    private double price;
+    @NotNull
+    private BigDecimal price;
+
+    @NotNull
+    private Integer stockQuantity;
+
+    @NotBlank
+    private String category; // This could be the category name
 
     private String imageUrl;
-
-    private Long categoryId;
-
-    private List<ReviewRequest> reviews;
-
-    private List<RatingRequest> ratings;
-
-    private List<DiscountRequest> discounts;
 }

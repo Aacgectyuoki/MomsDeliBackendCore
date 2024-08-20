@@ -1,20 +1,25 @@
 package com.momsdeli.online.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
+
 @Data
 public class OrderItemRequest {
 
-    private int quantity;
+    @NotBlank
+    private String productName;
 
-    private double price;
+    @NotNull
+    private Integer quantity;
 
-    private Long productId;
-
-    private Long orderId;
-
+    @NotNull
+    private BigDecimal price;
 }

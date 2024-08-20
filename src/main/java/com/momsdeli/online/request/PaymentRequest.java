@@ -1,25 +1,30 @@
 package com.momsdeli.online.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
-
 @Data
 public class PaymentRequest {
 
+    @NotBlank
+    private String order; // This could be the order ID
 
-    private String paymentType;
+    @NotBlank
+    private String paymentMethod;
 
-    private String provider;
+    @NotNull
+    private BigDecimal amount;
 
-    private double amount;
+    @NotBlank
+    private String paymentStatus;
 
-    private Date paymentDate;
-
-    private Long orderId;
+    @NotBlank
+    private String transactionId;
 }

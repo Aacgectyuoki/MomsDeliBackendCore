@@ -1,34 +1,34 @@
 package com.momsdeli.online.model;
 
-import com.momsdeli.online.model.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "discounts")
-public class Discount extends BaseEntity {
+public class Discount {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private double discountValue; // Percentage or flat value
-
-    @Column(nullable = false)
-    private boolean isPercentage; // True if percentage discount, false if flat discount
-
-    @Column(nullable = false)
-    private LocalDateTime startDate;
-
-    @Column(nullable = false)
-    private LocalDateTime endDate;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    @ToString.Exclude
     private Product product;
 
+    @Column(nullable = false)
+    private BigDecimal discountPercent;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 }

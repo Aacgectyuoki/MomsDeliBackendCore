@@ -1,34 +1,43 @@
 package com.momsdeli.online.model;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "orders")
-public class Order extends BaseEntity {
+public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Date orderDate;
-
-    @Column(nullable = false)
-    private String status;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User user;
 
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    @Column(nullable = false, length = 50)
+    private String status;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private ShippingAddress shippingAddress;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<OrderItem> orderItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<OrderStatusHistory> statusHistory = new ArrayList<>();
 }

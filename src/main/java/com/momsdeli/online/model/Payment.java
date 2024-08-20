@@ -1,29 +1,42 @@
 package com.momsdeli.online.model;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import lombok.*;
 
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "payments")
-public class Payment extends BaseEntity {
+public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String paymentType;
-
-    @Column(nullable = false)
-    private String provider;
-
-    @Column(nullable = false)
-    private double amount;
-
-    @Column(nullable = false)
-    private Date paymentDate;
-
-    @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @ToString.Exclude
     private Order order;
+
+    @Column(nullable = false, length = 50)
+    private String paymentMethod;
+
+    @Column(nullable = false)
+    private BigDecimal amount;
+
+    @Column(nullable = false, length = 50)
+    private String paymentStatus;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String transactionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    private User user;
 
 }

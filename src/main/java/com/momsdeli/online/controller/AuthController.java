@@ -1,103 +1,82 @@
 /**
- * Author: Shahbaz Ali
- * Email: shahbazkhaniq@gmail.com
- * Date: 2/27/2024$
- * Time: 11:30 PM$
- * Project Name: MomsDeliBackendCore$
+ * @author Shahbaz Khan
+ * @date 20/08/2024
  */
 
 package com.momsdeli.online.controller;
 
-import com.momsdeli.online.config.JwtProvider;
-import com.momsdeli.online.request.LoginRequest;
+import com.momsdeli.online.request.AuthRequest;
 import com.momsdeli.online.response.AuthResponse;
-import com.momsdeli.online.exceptions.UserException;
-import com.momsdeli.online.model.User;
-import com.momsdeli.online.repository.UserRepository;
-import com.momsdeli.online.service.impl.CustomUserServiceImplementation;
-import com.momsdeli.online.utils.MomsDeliUtils;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import com.momsdeli.online.response.RefreshTokenResponse;
+import com.momsdeli.online.security.JwtUtil;
+import com.momsdeli.online.service.CustomUserDetailsService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
-@AllArgsConstructor
-
+@RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final CustomUserServiceImplementation customUserServiceImplementation;
+    @Autowired
+    private JwtUtil jwtUtil;
 
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user) throws UserException {
-
-        String email = user.getEmail();
-        String password = user.getPassword();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-
-        User isEmailExist = userRepository.findByEmail(email);
-
-        if (isEmailExist != null) {
-            throw new UserException("Email is already used with another account");
-        }
-
-        User createdUser = new User();
-        createdUser.setEmail(email);
-        createdUser.setPassword(passwordEncoder.encode(password));
-        createdUser.setFirstName(firstName);
-        createdUser.setLastName(lastName);
-        User savedUser = userRepository.save(createdUser);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(), savedUser.getPassword());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String generateToken = jwtProvider.generateToken(authentication);
-        AuthResponse authResponse = new AuthResponse(generateToken, MomsDeliUtils.SIGNUP_SUCCESS);
-        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
-    }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginUserHandler(@RequestBody LoginRequest loginRequest) {
-
-        String email = loginRequest.getEmail();
-        String password = loginRequest.getPassword();
-
-        Authentication authentication = authentication(email, password);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String generateToken = jwtProvider.generateToken(authentication);
-        AuthResponse authResponse = new AuthResponse(generateToken, MomsDeliUtils.SIGNING_SUCCESS);
-        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
-
-    }
-
-    private Authentication authentication(String email, String password) {
-
-        UserDetails userDetails = customUserServiceImplementation.loadUserByUsername(email);
-
-        if (StringUtils.isBlank(email)) {
-            throw new BadCredentialsException("Invalid username");
+    public ResponseEntity<AuthResponse> createToken(@RequestBody AuthRequest authRequest) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            throw new Exception("Incorrect username or password", e);
         }
 
-        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new BadCredentialsException("Invalid Password");
-        }
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        final String accessToken = jwtUtil.generateToken(userDetails);
+        final String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        AuthResponse response = new AuthResponse(
+                accessToken,
+                refreshToken,
+                3600
+        );
+
+        return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refreshAuthToken(@RequestBody String refreshToken) {
+        try {
+            if (jwtUtil.validateRefreshToken(refreshToken)) {
+                String username = jwtUtil.extractUsername(refreshToken);
+                log.info("Username extracted from refresh token: {}", username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String newAccessToken = jwtUtil.generateToken(userDetails);
+                RefreshTokenResponse response = new RefreshTokenResponse(newAccessToken, refreshToken, 3600);
+                log.info("New access token generated for user: {}", username);
+                return ResponseEntity.ok(response);
+            } else {
+                log.warn("Invalid refresh token provided");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while processing refresh token", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

@@ -1,32 +1,18 @@
 package com.momsdeli.online.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+/**
+ * @author Shahbaz Khan
+ * @date 19/08/2024
+ */
 
 @Data
 public class ReviewDTO {
 
-    @JsonProperty("id")
     private Long id;
-
-    @NotBlank(message = "Comment is mandatory")
-    @JsonProperty("comment")
-    private String comment;
-
-    @Min(value = 1, message = "Rating must be at least 1")
-    @Max(value = 5, message = "Rating must be at most 5")
-    @JsonProperty("rating")
+    private String productName; // This could be the product name or a ProductDTO
+    private String username; // This could be the username or a UserDTO
     private int rating;
-
-    @NotNull(message = "Product is mandatory")
-    @JsonProperty("product")
-    private ProductDTO product;
-
-    @NotNull(message = "User is mandatory")
-    @JsonProperty("user")
-    private UserDTO user;
+    private String comment;
 }

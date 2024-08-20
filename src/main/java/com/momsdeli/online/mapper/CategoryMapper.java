@@ -1,19 +1,27 @@
 package com.momsdeli.online.mapper;
 
+/**
+ * @author Shahbaz Khan
+ * @date 19/08/2024
+ */
+
 import com.momsdeli.online.dto.CategoryDTO;
 import com.momsdeli.online.model.Category;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+import java.util.List;
+
+@Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    CategoryDTO categoryToCategoryDTO(Category category);
+    CategoryDTO toDTO(Category category);
 
-    Category categoryDTOToCategory(CategoryDTO categoryDTO);
+    Category toEntity(CategoryDTO categoryDTO);
 
-    void updateCategoryFromDTO(CategoryDTO dto, @MappingTarget Category entity);
+    List<CategoryDTO> toDTOs(List<Category> categories);
+
+    List<Category> toEntities(List<CategoryDTO> categoryDTOs);
 }

@@ -1,27 +1,25 @@
 package com.momsdeli.online.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
 
 @Data
 public class OrderRequest {
 
-    private Date orderDate;
+    @NotBlank
+    private String user; // This could be the username
 
+    @NotNull
+    private List<OrderItemRequest> orderItems; // List of items in the order
+
+    @NotBlank
     private String status;
-
-    private Long userId;
-
-    private List<OrderItemRequest> orderItems;
-
-    private PaymentRequest payment;
-
-    private ShippingAddressRequest shippingAddress;
 }

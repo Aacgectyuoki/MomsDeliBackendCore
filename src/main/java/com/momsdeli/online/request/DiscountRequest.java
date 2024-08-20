@@ -1,28 +1,28 @@
 package com.momsdeli.online.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * @author Shahbaz Khan
- * @date 16/08/2024
+ * @date 19/08/2024
  */
-
 @Data
 public class DiscountRequest {
 
-    private String name;
+    @NotBlank
+    private String productName;
 
-    private double discountValue; // Percentage or flat value
+    @NotNull
+    private BigDecimal discountPercent;
 
-    private boolean isPercentage; // True if percentage discount, false if flat discount
+    @NotNull
+    private LocalDate startDate;
 
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
-
-    private Long productId; // Reference by ID
-
-
+    @NotNull
+    private LocalDate endDate;
 }

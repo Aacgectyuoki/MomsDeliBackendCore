@@ -1,13 +1,19 @@
 package com.momsdeli.online.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product extends BaseEntity {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,25 +22,32 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
-    private double price;
+    private BigDecimal price;
 
-    @Column(name = "product_image_url")
-    private String imageUrl;
+    @Column(nullable = false)
+    private int stockQuantity;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Review> reviews;
+    @Column(name = "image_url")
+    private String imageUrl;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Rating> ratings;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Discount> discounts;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Discount> discounts = new ArrayList<>();
 }

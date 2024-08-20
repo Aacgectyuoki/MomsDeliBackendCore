@@ -1,20 +1,30 @@
 package com.momsdeli.online.mapper;
 
+/**
+ * @author Shahbaz Khan
+ * @date 19/08/2024
+ */
+
 import com.momsdeli.online.dto.CartItemDTO;
 import com.momsdeli.online.model.CartItem;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+import java.util.List;
+
+@Mapper(componentModel = "spring")
 public interface CartItemMapper {
 
     CartItemMapper INSTANCE = Mappers.getMapper(CartItemMapper.class);
 
-    CartItemDTO cartItemToCartItemDTO(CartItem cartItem);
+    @Mapping(source = "product.name", target = "productName")
+    CartItemDTO toDTO(CartItem cartItem);
 
-    CartItem cartItemDTOToCartItem(CartItemDTO cartItemDTO);
+    @Mapping(source = "productName", target = "product.name")
+    CartItem toEntity(CartItemDTO cartItemDTO);
 
-    // Method to update an existing entity from a DTO
-    void updateCartItemFromDTO(CartItemDTO dto, @MappingTarget CartItem entity);
+    List<CartItemDTO> toDTOs(List<CartItem> cartItems);
+
+    List<CartItem> toEntities(List<CartItemDTO> cartItemDTOs);
 }
