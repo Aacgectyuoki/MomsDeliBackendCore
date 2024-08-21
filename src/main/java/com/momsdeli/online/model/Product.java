@@ -39,6 +39,9 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "average_rating")
+    private Float averageRating;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -50,4 +53,16 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Discount> discounts = new ArrayList<>();
+
+
+    public void calculateAverageRating() {
+        if (reviews != null && !reviews.isEmpty()) {
+            this.averageRating = (float) reviews.stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(0);
+        } else {
+            this.averageRating = 0f;
+        }
+    }
 }

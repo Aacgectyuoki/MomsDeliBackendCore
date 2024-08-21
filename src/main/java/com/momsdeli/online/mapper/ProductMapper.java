@@ -4,6 +4,7 @@ import com.momsdeli.online.dto.ProductDTO;
 import com.momsdeli.online.model.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -27,4 +28,8 @@ public interface ProductMapper {
     List<ProductDTO> toDTOs(List<Product> products);
 
     List<Product> toEntities(List<ProductDTO> productDTOs);
+
+    // Method to update an existing Product entity from a ProductDTO
+    @Mapping(source = "category", target = "category.name")
+    void updateProductFromDTO(ProductDTO productDTO, @MappingTarget Product product);
 }
