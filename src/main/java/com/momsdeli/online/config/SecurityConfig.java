@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
+                      //  .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -58,9 +59,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**");
     }
+
+
 }

@@ -8,6 +8,7 @@ package com.momsdeli.online.mapper;
 import com.momsdeli.online.dto.CategoryDTO;
 import com.momsdeli.online.model.Category;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -24,4 +25,7 @@ public interface CategoryMapper {
     List<CategoryDTO> toDTOs(List<Category> categories);
 
     List<Category> toEntities(List<CategoryDTO> categoryDTOs);
+
+    // Method for updating an existing entity from a DTO
+    void updateEntityFromDto(CategoryDTO categoryDTO, @MappingTarget Category category);
 }

@@ -40,4 +40,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/springdoc-openapi-ui/")
                 .resourceChain(false);
     }
+
+
 }
