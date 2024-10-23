@@ -57,4 +57,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStockQuantityEquals(int stockQuantity);
 
     boolean existsBySku(String sku);
+
+    // Custom query method to count products by category
+    long countByCategory(Category category);
 }

@@ -15,6 +15,7 @@ import com.momsdeli.online.repository.ProductRepository;
 import com.momsdeli.online.repository.ProductImageRepository;
 import com.momsdeli.online.service.ProductService;
 import com.momsdeli.online.service.S3Service;
+import com.momsdeli.online.utils.SkuGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,14 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + categoryId));
 
 
-        if (productRepository.existsBySku(productDTO.getSku())) {
-            throw new DuplicateSKUException("Product with SKU " + productDTO.getSku() + " already exists.");
+        // Automatically generate SKU based on the category
+        long productCount = productRepository.countByCategory(category);
+        String generatedSku = SkuGeneratorUtil.generateSkuBasedOnCategory(category, productCount);
+        productDTO.setSku(generatedSku);
+
+        // Check for duplicate SKU
+        if (productRepository.existsBySku(generatedSku)) {
+            throw new DuplicateSKUException("Product with SKU " + generatedSku + " already exists.");
         }
 
 
