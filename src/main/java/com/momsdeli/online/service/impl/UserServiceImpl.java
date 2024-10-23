@@ -10,14 +10,11 @@ import com.momsdeli.online.service.UserService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,11 +26,8 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
-
     private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final UserMapper userMapper;
 
     @Override
@@ -44,24 +38,15 @@ public class UserServiceImpl implements UserService {
         // Convert UserDTO to User entity
         User user = userMapper.toEntity(userDTO);
 
-//        // Encode the password
-//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-
         // Encode the password only if it is provided
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
 
-
-        // Ensure the roles set is initialized
-        Set<Role> roles = new HashSet<>();
-
         // Set default role to USER
-        Role defaultRole = roleRepository.findByRoleName("USER")
+        Role defaultRole = roleRepository.findByRoleName("ADMIN")
                 .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-        roles.add(defaultRole);
-        user.setRoles(roles);
+        user.setRoles(Set.of(defaultRole));
 
         // Save the user to the database
         user = userRepository.save(user);
@@ -105,8 +90,13 @@ public class UserServiceImpl implements UserService {
         // Update user details
         existingUser.setUsername(userDTO.getUsername());
         existingUser.setEmail(userDTO.getEmail());
-        existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        existingUser.setRoles(userMapper.mapRoleNameToRoles(userDTO.getRole()));
+
+        // Update password if provided
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        // Roles are not updated through this method, so keep the existing roles
 
         existingUser = userRepository.save(existingUser);
         logger.info("User updated successfully with ID: {}", existingUser.getId());
@@ -117,7 +107,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         logger.info("Deleting user with ID: {}", id);
-        userRepository.deleteById(id);
-        logger.info("User deleted successfully with ID: {}", id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            logger.info("User deleted successfully with ID: {}", id);
+        } else {
+            logger.warn("User with ID: {} not found", id);
+            throw new RuntimeException("User not found");
+        }
     }
 }

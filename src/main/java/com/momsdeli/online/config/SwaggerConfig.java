@@ -1,23 +1,27 @@
 package com.momsdeli.online.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.OpenAPI;
 
 @Configuration
-public class SwaggerConfig implements WebMvcConfigurer {
+public class SwaggerConfig {
+
+    private static final String SECURITY_SCHEME_NAME = "BearerAuth";
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("public")
                 .pathsToMatch("/**")
-                .packagesToScan("com.momsdeli.online.controller")
                 .build();
     }
 
@@ -31,15 +35,15 @@ public class SwaggerConfig implements WebMvcConfigurer {
                         .contact(new Contact()
                                 .name("Shahbaz Khan")
                                 .url("https://momsdelionline.com")
-                                .email("shahbazkhaniq@gmail.com")));
+                                .email("shahbazkhaniq@gmail.com")))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+                .components(new Components()
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
+                                .name(SECURITY_SCHEME_NAME)
+                                .type(Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .in(In.HEADER)
+                                .description("JWT authorization using the Bearer scheme. Example: \"Authorization: Bearer {token}\"")));
     }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/swagger-ui/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/springdoc-openapi-ui/")
-                .resourceChain(false);
-    }
-
-
 }

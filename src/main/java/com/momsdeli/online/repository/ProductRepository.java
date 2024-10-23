@@ -1,5 +1,6 @@
 package com.momsdeli.online.repository;
 
+import com.momsdeli.online.model.Category;
 import com.momsdeli.online.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p ORDER BY p.averageRating DESC")
     List<Product> findTopRatedProducts();
 
+    /**
+     * Finds all products in a given category.
+     *
+     * @param category the category entity
+     * @return a list of products belonging to the specified category
+     */
+    List<Product> findByCategory(Category category);
+
+    /**
+     * Finds all products with the specified stock quantity.
+     *
+     * @param stockQuantity the stock quantity to search for
+     * @return a list of products with the specified stock quantity
+     */
+    List<Product> findByStockQuantityEquals(int stockQuantity);
+
+    boolean existsBySku(String sku);
 }

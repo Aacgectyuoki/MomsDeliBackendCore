@@ -1,14 +1,12 @@
 package com.momsdeli.online.controller;
 
 import com.momsdeli.online.dto.ProductDTO;
+import com.momsdeli.online.dto.ProductImageDTO;
 import com.momsdeli.online.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,121 +14,135 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Tag(name = "Product Management", description = "APIs for managing products")
+/**
+ * REST controller for managing products.
+ * Provides endpoints for CRUD operations, image management,
+ * category-based filtering, and advanced search and filtering.
+ *
+ * @author Shahbaz Khan
+ * @date 29/08/2024
+ */
+@Slf4j
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Tag(name = "Product Management", description = "APIs for managing products")
 public class ProductController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
 
-    @Operation(summary = "Create a new product")
+
+    @Operation(summary = "Create a new product with an image")
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(
-            @Parameter(description = "Product details") @ModelAttribute ProductDTO productDTO,
-            @Parameter(description = "Product image file") @RequestPart("image") MultipartFile imageFile) {
-        logger.info("API call to create a new product");
-        ProductDTO createdProduct = productService.createProduct(productDTO, imageFile);
+    public ResponseEntity<ProductDTO> createProductWithImage(
+            @ModelAttribute ProductDTO productDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        log.info("REST request to create a new product with an image");
+        ProductDTO createdProduct = productService.createProduct(productDTO, image);
         return ResponseEntity.ok(createdProduct);
     }
 
-    @Operation(summary = "Update an existing product")
+    @Operation(summary = "Update an existing product with an optional image")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(
-            @Parameter(description = "Product ID") @PathVariable Long id,
-            @Parameter(description = "Updated product details") @ModelAttribute ProductDTO productDTO,
-            @Parameter(description = "Updated product image file", required = false) @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        logger.info("API call to update product with ID: {}", id);
-        ProductDTO updatedProduct = productService.updateProduct(id, productDTO, imageFile);
+    public ResponseEntity<ProductDTO> updateProductWithImage(
+            @PathVariable Long id,
+            @RequestPart("product") ProductDTO productDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        log.info("REST request to update product with ID: {} and an optional image", id);
+        ProductDTO updatedProduct = productService.updateProduct(id, productDTO, image);
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @Operation(summary = "Delete a product by ID")
+    @Operation(summary = "Delete a product", description = "Deletes a product by its ID.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(
-            @Parameter(description = "Product ID") @PathVariable Long id) {
-        logger.info("API call to delete product with ID: {}", id);
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        log.info("REST request to delete product with ID: {}", id);
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get a product by ID")
+    @Operation(summary = "Get a product by ID", description = "Retrieves a product by its ID.")
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(
-            @Parameter(description = "Product ID") @PathVariable Long id) {
-        logger.info("API call to fetch product with ID: {}", id);
-        ProductDTO product = productService.getProductById(id);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+        log.info("REST request to get product with ID: {}", id);
+        ProductDTO productDTO = productService.getProductById(id);
+        return ResponseEntity.ok(productDTO);
     }
 
-    @Operation(summary = "Get all products")
+    @Operation(summary = "Get all products", description = "Retrieves all products.")
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        logger.info("API call to fetch all products");
+        log.info("REST request to get all products");
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
-    @Operation(summary = "Search products by name")
+    // Category-Based Operations
+
+    @Operation(summary = "Get products by category ID", description = "Retrieves products by the given category ID.")
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId) {
+        log.info("REST request to get products by category ID: {}", categoryId);
+        List<ProductDTO> products = productService.getProductsByCategory(categoryId);
+        return ResponseEntity.ok(products);
+    }
+
+    // Product Image Management
+
+    @Operation(summary = "Add an image to a product", description = "Adds an image to the specified product.")
+    @PostMapping("/{productId}/images")
+    public ResponseEntity<ProductImageDTO> addProductImage(@PathVariable Long productId, @RequestBody ProductImageDTO productImageDTO) {
+        log.info("REST request to add image to product with ID: {}", productId);
+        ProductImageDTO createdImage = productService.addProductImage(productId, productImageDTO);
+        return ResponseEntity.ok(createdImage);
+    }
+
+    @Operation(summary = "Remove an image from a product", description = "Removes the specified image from the given product.")
+    @DeleteMapping("/{productId}/images/{imageId}")
+    public ResponseEntity<Void> removeProductImage(@PathVariable Long productId, @PathVariable Long imageId) {
+        log.info("REST request to remove image with ID: {} from product with ID: {}", imageId, productId);
+        productService.removeProductImage(productId, imageId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get all images for a product", description = "Retrieves all images associated with the specified product.")
+    @GetMapping("/{productId}/images")
+    public ResponseEntity<List<ProductImageDTO>> getProductImages(@PathVariable Long productId) {
+        log.info("REST request to get images for product with ID: {}", productId);
+        List<ProductImageDTO> images = productService.getProductImages(productId);
+        return ResponseEntity.ok(images);
+    }
+
+    // Advanced Search and Filter Operations
+
+    @Operation(summary = "Search products by name", description = "Searches products by the given name.")
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProductsByName(
-            @Parameter(description = "Product name") @RequestParam String name) {
-        logger.info("API call to search products by name: {}", name);
+    public ResponseEntity<List<ProductDTO>> searchProductsByName(@RequestParam String name) {
+        log.info("REST request to search products by name: {}", name);
         List<ProductDTO> products = productService.searchProductsByName(name);
         return ResponseEntity.ok(products);
     }
 
-    @Operation(summary = "Get products by category")
-    @GetMapping("/category")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategory(
-            @Parameter(description = "Category name") @RequestParam String categoryName) {
-        logger.info("API call to fetch products by category: {}", categoryName);
-        List<ProductDTO> products = productService.getProductsByCategory(categoryName);
-        return ResponseEntity.ok(products);
-    }
-
-    @Operation(summary = "Get product image URL")
-    @GetMapping("/{id}/image")
-    public ResponseEntity<String> getProductImageUrl(
-            @Parameter(description = "Product ID") @PathVariable Long id) {
-        logger.info("API call to fetch product image URL for product with ID: {}", id);
-        String imageUrl = productService.getProductImageUrl(id);
-        return ResponseEntity.ok(imageUrl);
-    }
-
-    @Operation(summary = "Get products with pagination")
-    @GetMapping("/paginate")
-    public ResponseEntity<Page<ProductDTO>> getProductsPaginated(
-            @Parameter(description = "Page number") @RequestParam int page,
-            @Parameter(description = "Page size") @RequestParam int size) {
-        logger.info("API call to fetch paginated products - page: {}, size: {}", page, size);
-        Page<ProductDTO> productPage = productService.getProductsPaginated(page, size);
-        return ResponseEntity.ok(productPage);
-    }
-
-    @Operation(summary = "Get products by price range")
-    @GetMapping("/price-range")
-    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(
-            @Parameter(description = "Minimum price") @RequestParam BigDecimal minPrice,
-            @Parameter(description = "Maximum price") @RequestParam BigDecimal maxPrice) {
-        logger.info("API call to fetch products within price range {} - {}", minPrice, maxPrice);
+    @Operation(summary = "Get products by price range", description = "Retrieves products within the specified price range.")
+    @GetMapping("/filter/price")
+    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(@RequestParam BigDecimal minPrice, @RequestParam BigDecimal maxPrice) {
+        log.info("REST request to get products by price range: {} - {}", minPrice, maxPrice);
         List<ProductDTO> products = productService.getProductsByPriceRange(minPrice, maxPrice);
         return ResponseEntity.ok(products);
     }
 
-    @Operation(summary = "Get in-stock products")
-    @GetMapping("/stock")
-    public ResponseEntity<List<ProductDTO>> getProductsByStockAvailability() {
-        logger.info("API call to fetch in-stock products");
-        List<ProductDTO> products = productService.getProductsByStockAvailability();
+    @Operation(summary = "Get products by stock availability", description = "Retrieves products based on their stock availability.")
+    @GetMapping("/filter/stock")
+    public ResponseEntity<List<ProductDTO>> getProductsByStockAvailability(@RequestParam boolean available) {
+        log.info("REST request to get products by stock availability: {}", available);
+        List<ProductDTO> products = productService.getProductsByStockAvailability(available);
         return ResponseEntity.ok(products);
     }
 
-    @Operation(summary = "Get top-rated products")
+    @Operation(summary = "Get top-rated products", description = "Retrieves the top-rated products.")
     @GetMapping("/top-rated")
     public ResponseEntity<List<ProductDTO>> getTopRatedProducts() {
-        logger.info("API call to fetch top-rated products");
+        log.info("REST request to get top-rated products");
         List<ProductDTO> products = productService.getTopRatedProducts();
         return ResponseEntity.ok(products);
     }

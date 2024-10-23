@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -19,6 +19,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String sku;
+
     @Column(nullable = false)
     private String name;
 
@@ -31,29 +34,59 @@ public class Product {
     @Column(nullable = false)
     private int stockQuantity;
 
+    @Column(nullable = false)
+    private boolean isActive = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @ToString.Exclude
     private Category category;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String imageUrl;  // Single image URL field
 
     @Column(name = "average_rating")
     private Float averageRating;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private List<OrderItem> orderItems;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Discount> discounts = new ArrayList<>();
+    private List<Discount> discounts;
 
+    private Double weight;
+    private Double length;
+    private Double width;
+    private Double height;
+
+    private String metaTitle;
+    private String metaDescription;
+    private String metaKeywords;
+
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
 
     public void calculateAverageRating() {
         if (reviews != null && !reviews.isEmpty()) {
