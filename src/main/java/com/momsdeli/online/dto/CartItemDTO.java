@@ -16,4 +16,6 @@ public class CartItemDTO {
     private String productName; // This could be the product name or a ProductDTO
     private int quantity;
     private BigDecimal price;
+    private Long productId; // The ID of the product being added to the cart
+    private Long cartId;    // The ID of the cart
 }
