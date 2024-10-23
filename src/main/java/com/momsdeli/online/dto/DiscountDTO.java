@@ -15,9 +15,8 @@ import java.time.LocalDate;
 public class DiscountDTO {
 
     private Long id;
-    private String code;           // Discount code (e.g., SAVE10)
-    private BigDecimal percentage; // Discount percentage
-    private LocalDate startDate;   // Start date of the discount
-    private LocalDate endDate;     // End date of the discount
-    private boolean active;        // Whether the discount is currently active
+    private String productName; // This could be the product name or a ProductDTO
+    private BigDecimal discountPercent;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }
