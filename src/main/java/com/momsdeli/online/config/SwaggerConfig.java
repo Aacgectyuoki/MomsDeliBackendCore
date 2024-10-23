@@ -36,7 +36,7 @@ public class SwaggerConfig {
                                 .name("Shahbaz Khan")
                                 .url("https://momsdelionline.com")
                                 .email("shahbazkhaniq@gmail.com")))
-                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+              //  .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
                         .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
                                 .name(SECURITY_SCHEME_NAME)
