@@ -34,3 +34,7 @@ build/
 
 # Ignore properties files
 src/main/resources/application-*.properties
+
+# Ignore security and config folders
+src/main/java/com/momsdeli/online/security/
+src/main/java/com/momsdeli/online/config/
